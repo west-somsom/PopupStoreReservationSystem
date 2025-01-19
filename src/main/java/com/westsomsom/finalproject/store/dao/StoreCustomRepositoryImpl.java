@@ -3,12 +3,15 @@ package com.westsomsom.finalproject.store.dao;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.QBean;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.westsomsom.finalproject.store.domain.QStore;
+import com.westsomsom.finalproject.store.domain.Store;
 import com.westsomsom.finalproject.store.dto.SearchRequestDto;
 import com.westsomsom.finalproject.store.dto.SearchResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +22,39 @@ import static com.westsomsom.finalproject.store.domain.QStore.store;
 public class StoreCustomRepositoryImpl implements StoreCustomRepository{
 
     private final JPAQueryFactory queryFactory;
+
+//    public Page<Store> getAllStores(Pageable pageable) {
+//        List<Store> storeList = queryFactory
+//                .selectFrom(store)
+//                .limit(pageable.getPageSize())
+//                .offset(pageable.getOffset())
+//                .fetch();
+//
+//        JPAQuery<Long> countQuery = queryFactory
+//                .select(store.count())
+//                .from(store);
+//
+//        return PageableExecutionUtils.getPage(storeList, pageable, countQuery::fetchOne);
+//    }
+
+    @Override
+    public Slice<Store> findStoresNoOffset(Integer lastStoreId, Pageable pageable) {
+        QStore store = QStore.store;
+
+        List<Store> stores = queryFactory
+                .selectFrom(store)
+                .where(lastStoreId != null ? store.storeId.lt(lastStoreId) : null)
+                .orderBy(store.storeId.desc())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        boolean hasNext = stores.size() > pageable.getPageSize();
+        if (hasNext) {
+            stores.remove(pageable.getPageSize());
+        }
+
+        return new SliceImpl<>(stores, pageable, hasNext);
+    }
 
     public List<SearchResponseDto> searchStore(SearchRequestDto searchRequestDto) {
         return queryFactory

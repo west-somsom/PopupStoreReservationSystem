@@ -1,16 +1,53 @@
+logging:
+  level:
+    root: INFO
+    com.westsomsom.finalproject: DEBUG
 spring:
   application:
     name: finalproject
+  config:
+    import:
+      - 'aws-parameterstore:/west-somsom/rds/'
+      - 'aws-parameterstore:/west-somsom/arn/'
+      - 'aws-parameterstore:/west-somsom/redis/'
+      - 'aws-parameterstore:/west-somsom/kakao/'
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_NAME}
+    #url: ${DB_URL}/west_somsom_mysql  # 데이터베이스 이름을 명시적으로 추가
+    password: ${DB_PASSWORD}
 
   jpa:
     database: mysql
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
-
+        format_sql: false
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+  devtools:
+    livereload:
+      enabled: true
+  data:
+    redis:
+      cluster:
+        nodes: ${REDIS_HOST}:6379  # 클러스터 엔드포인트
+        lettuce:
+          cluster:
+            refresh:
+              adaptive: true
+              period: 30s
+          pool:
+            max-active: 8
+            max-idle: 8
+            min-idle: 0
   profiles:
     include: local
 
@@ -20,3 +57,20 @@ server:
       charset: UTF-8
       enabled: true
       force: true
+
+custom:
+  scheduler:
+    targetArn: ${TARGET_ARN}
+    roleArn: ${ROLE_ARN}
+
+kakao:
+  client:
+    id: ${KAKAO_ID}
+    secret: ${KAKAO_SECRET}
+  redirect:
+    url: ${KAKAO_URL}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

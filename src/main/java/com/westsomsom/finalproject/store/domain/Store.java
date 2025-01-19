@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -34,13 +35,22 @@ public class Store {
     @Column(nullable = false, length = 100)
     private String storeLoc;
 
+    @Column(nullable = false)
+    private LocalDateTime reservationStart;
+
+    @Column(nullable = false)
+    private LocalDateTime reservationFin;
+
     @Builder
-    public Store(String storeName, String storeBio, LocalDate startDate, LocalDate finDate, String storeCategory, String storeLoc) {
+    public Store(String storeName, String storeBio, LocalDate startDate, LocalDate finDate, String storeCategory, String storeLoc
+    , LocalDateTime reservationStart, LocalDateTime reservationFin) {
         this.storeName = storeName;
         this.storeBio = storeBio;
         this.startDate = startDate;
         this.finDate = finDate;
         this.storeCategory = storeCategory;
         this.storeLoc = storeLoc;
+        this.reservationStart = reservationStart;
+        this.reservationFin = reservationFin;
     }
 }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+</head>
+<body>
+<h2>마이페이지</h2>
+<div>
+    <p>사용자 ID: <span th:text="${userInfo.userId}"></span></p>
+    <p>이메일: <span th:text="${userInfo.email}"></span></p>
+    <p>이름: <span th:text="${userInfo.username}"></span></p>
+    <p>전화번호: <span th:text="${userInfo.phone}"></span></p>
+    <p>성별: <span th:text="${userInfo.gender == '0' ? '남자' : '여자'}"></span></p>
+    <p>연령: <span th:text="${userInfo.age}"></span></p>
+    <p>거주지 주소: <span th:text="${userInfo.cstAddrNo}"></span></p>
+</div>
+
+<h3>정보 수정</h3>
+<form id="updateForm">
+    <label for="phone">전화번호:</label>
+    <input type="tel" id="phone" name="phone" value="" th:value="${userInfo.phone}">
+    <br>
+    <label for="gender">성별:</label>
+    <select name="gender" id="gender">
+        <option value="0" th:selected="${userInfo.gender == '0'}">남자</option>
+        <option value="1" th:selected="${userInfo.gender == '1'}">여자</option>
+    </select>
+    <br>
+    <label for="age">연령:</label>
+    <input type="number" id="age" name="age" th:value="${userInfo.age}">
+    <br>
+    <label for="cstAddrNo">거주지 주소:</label>
+    <input type="text" id="cstAddrNo" name="cstAddrNo" th:value="${userInfo.cstAddrNo}">
+    <br>
+    <button type="button" onclick="updateUserInfo()">정보 수정</button>
+</form>
+<script>
+    function updateUserInfo() {
+        const formData = new FormData(document.getElementById('updateForm'));
+
+        fetch('/mypage/update', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.msg === "User information updated successfully") {
+                    alert('정보가 성공적으로 업데이트되었습니다.');
+                    location.reload();
+                } else {
+                    alert('업데이트 실패: ' + data.msg);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating user info:', error);
+                alert('서버 오류로 인해 업데이트에 실패했습니다.');
+            });
+    }
+</script>
+<p><a th:href="@{/}">홈으로 돌아가기</a></p>
+</body>
+</html>

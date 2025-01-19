@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -32,12 +33,39 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	// queryDSL
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
 	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
+	// websocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// aws eventbridge scheduler
+	implementation(platform("software.amazon.awssdk:bom:2.29.39"))
+	implementation 'software.amazon.awssdk:eventbridge'
+	implementation 'software.amazon.awssdk:scheduler'
+	implementation 'software.amazon.awssdk:netty-nio-client'
+
+	// aws parameter store
+	implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.2.1")
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-parameter-store'
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter'
+	implementation 'software.amazon.awssdk:ssm'
+
+	// json
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+	implementation 'org.json:json:20210307'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
 }
 
 def generated = 'src/main/generated'
